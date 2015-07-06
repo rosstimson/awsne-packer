@@ -6,4 +6,4 @@ dependencies:
 
 test:
   override:
-    - packer build awsne-packer.json
+    - ./packer build awsne-packer.json
