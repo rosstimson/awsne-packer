@@ -7,6 +7,8 @@
 
 ```
 
+[![Circle CI](https://circleci.com/gh/rosstimson/awsne-packer.svg?style=svg)](https://circleci.com/gh/rosstimson/awsne-packer)
+
 ## Setup
 
 * Git clone this project:
