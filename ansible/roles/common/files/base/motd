@@ -1,0 +1,23 @@
+#!/bin/sh
+IFS="" read -r -d '' banner << "EOT"
+
+ _____ _ _ _ _____    _____ _____    _____         _
+|  _  | | | |   __|  |   | |   __|  |  _  |___ ___| |_ ___ ___
+|     | | | |__   |  | | | |   __|  |   __| .'|  _| '_| -_|  _|
+|__|__|_____|_____|  |_|___|_____|  |__|  |__,|___|_,_|___|_|
+
+
+------------------------------ W A R N I N G ------------------------------
+
+Disconnect now if you are not authorised to access this system.
+
+By continuing, you consent to your keystrokes and data content being
+monitored for lawful purposes.
+
+Unauthorised use is a criminal offence under the Computer Misuse Act
+1990.
+
+---------------------------------------------------------------------------
+EOT
+
+echo "$banner"

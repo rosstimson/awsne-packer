@@ -1,0 +1,4 @@
+---
+- include: base.yml
+- include: hardening.yml
+- include: tools.yml

@@ -1,0 +1,27 @@
+---
+# Hardening task defaults
+hardening_password_max_age: 99999   # Don't bother expiring passwords, use keys only anyway.
+hardening_password_min_age: 28      # If max_age enforced then discourage password cycling.
+hardening_password_min_length: 8
+hardening_login_retries: 3
+hardening_login_timeout: 60
+# Umask values need to be quoted otherwise Python interprets it as an Octal and
+# replaces it with the decimal representation.
+hardening_daemon_umask: '027' # NSA 2.2.4.1 Set Daemon umask
+hardening_login_umask: '077'  # NSA 2.3.4.4 Ensure that Users Have Sensible umask Values
+hardening_securettys:
+  - console
+  - tty1
+  - tty2
+  - tty3
+  - tty4
+  - tty5
+  - tty6
+# Many executables in the NSA blacklist are not present on Amazon Linux
+# so they are not listed here as Ansible file module will create an
+# empty file with a touch of a missing file.
+hardening_suid_sgid_blacklist:
+  - /usr/libexec/openssh/ssh-keysign
+  - /sbin/netreport
+  - /usr/sbin/usernetctl
+  - /usr/bin/lockfile

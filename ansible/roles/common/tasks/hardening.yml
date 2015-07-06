@@ -1,0 +1,71 @@
+---
+- name: ensure packages with known issues are not present
+  yum: name={{ item }} state=absent
+  with_items:
+    - inetd
+    - rsh-server
+    - telnet-server
+    - traceroute
+    - xinetd
+    - ypserv
+
+- name: prevent core dumps for all users
+  copy: src=hardening/10.hardcore.conf dest=/etc/security/limits.d/10.hardcore.conf owner=root group=root mode=0440
+
+# Also includes NSA 2.3.4.4 Ensure that Users Have Sensible umask Values
+- name: ensure login config is in place
+  template: src=hardening/login.defs.j2 dest=/etc/login.defs owner=root group=root mode=0644
+
+# See NSA 2.3.1.1 Restrict Root Logins to System Console
+- name: restrict root logins to system console
+  template: src=hardening/securetty.j2 dest=/etc/securetty owner=root group=root mode=0600
+
+# See NSA 2.2.3.4 Find Unauthorized SUID/SGID System Executables
+- name: remove unauthorized suid/sgid from blacklisted system executables
+  file: path={{ item }} state=touch mode="a-s"
+  with_items: hardening_suid_sgid_blacklist
+
+- name: ensure sysctl.conf is protected
+  file: path=/etc/sysctl.conf state=touch owner=root group=root mode=0440
+
+- name: set kernel.randomize_va_space
+  sysctl: name=kernel.randomize_va_space value=1 sysctl_file=/etc/sysctl.d/60-hardening.conf
+
+- name: set net.ipv4 options
+  sysctl: name={{ item }} value=1 sysctl_file=/etc/sysctl.d/60-hardening.conf
+  with_items:
+    - net.ipv4.conf.all.rp_filter
+    - net.ipv4.icmp_echo_ignore_broadcasts
+    - net.ipv4.icmp_ignore_bogus_error_responses
+    - net.ipv4.conf.all.log_martians
+
+- name: unset net.ipv4 options
+  sysctl: name={{ item }} value=0 sysctl_file=/etc/sysctl.d/60-hardening.conf
+  with_items:
+    - net.ipv4.conf.all.send_redirects
+    - net.ipv4.conf.default.accept_redirects
+
+# NSA 2.2.4.1 Set Daemon umask
+- name: ensure daemon umask is set
+  template: src=hardening/sysconfig_init.j2 dest=/etc/sysconfig/init owner=root group=root mode=0644
+
+# NOTE: It is not necessary to notify a handler to restart the ssh
+# service as we are just building an AMI rather than running a play
+# against live servers.
+- name: ensure ssh root login is not permitted
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^PermitRootLogin forced-commands-only$"
+    line: "PermitRootLogin no"
+
+- name: remove erroneous comment
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^# Only allow root to run commands over ssh, no shell$"
+    state: absent
+
+- name: ensure ssh strict mode is explicitly set
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^#StrictModes yes$"
+    line: "StrictModes yes"

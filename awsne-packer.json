@@ -1,0 +1,54 @@
+{
+    "builders": [
+        {
+            "type": "amazon-ebs",
+            "access_key":  "{{user `aws_access_key_id`}}",
+            "secret_key":  "{{user `aws_secret_key`}}",
+            "region": "eu-west-1",
+            "source_ami": "ami-a10897d6",
+            "ami_virtualization_type": "hvm",
+            "instance_type": "c3.large",
+            "ssh_username": "ec2-user",
+            "ssh_timeout": "3m",
+            "ssh_pty": "true",
+            "ami_name": "awsne_{{isotime | clean_ami_name}}",
+            "tags": {
+                "Name": "AWS NE Packer",
+                "CreationDate": "{{timestamp}}",
+                "Builder": "Packer",
+                "Provisioner": "Ansible"
+            }
+        }
+    ],
+    "provisioners": [
+        {
+            "execute_command": "echo 'ec2-user' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+            "type": "shell",
+            "script": "scripts/sudoers.sh"
+        },
+        {
+            "execute_command": "echo 'ec2-user' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+            "type": "shell",
+            "inline": ["yum -y update", "reboot && sleep 60"]
+        },
+        {
+            "execute_command": "echo 'ec2-user' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+            "type": "shell",
+            "inline": [ "yum install -y python26-pip", "pip install ansible" ]
+        },
+        {
+            "type": "ansible-local",
+            "playbook_file": "ansible/playbook.yml",
+            "playbook_dir": "ansible"
+        },
+        {
+            "execute_command": "echo 'ec2-user' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+            "type": "shell",
+            "inline": ["rm -rf /tmp/*", "rm -f /tmp/.ansible-lock.*"]
+        }
+    ],
+    "variables": {
+        "aws_access_key_id": "{{env `PACKER_AWS_ACCESS_KEY_ID`}}",
+        "aws_secret_key": "{{env `PACKER_AWS_SECRET_ACCESS_KEY`}}"
+    }
+}

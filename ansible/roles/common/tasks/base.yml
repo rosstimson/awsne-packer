@@ -1,0 +1,23 @@
+---
+- name: ensure ntpd is running and enabled
+  service: name=ntpd enabled=yes state=started
+
+- name: ensure uneccessary services are stopped and disabled
+  service: name={{ item }} enabled=no state=stopped
+  with_items:
+    - irqbalance
+    - lvm2-monitor
+    - netfs
+    - atd
+    - mdmonitor
+
+- name: ensure custom motd is present
+  copy: src=base/motd dest=/etc/update-motd.d/40-custom-banner owner=root group=root mode=0755
+  notify:
+    - update motd
+
+# - name: ensure /usr/local/bin is in PATH
+#   lineinfile:
+#     dest: /etc/profile
+#     insertafter: "^.*pathmunge /usr/local/sbin after$"
+#     line: "    pathmunge /usr/local/bin after"

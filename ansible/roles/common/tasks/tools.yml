@@ -1,0 +1,14 @@
+---
+- name: ensure useful utilities are installed
+  yum: name={{ item }} state=present
+  with_items:
+    - iotop
+    - jq
+    - strace
+    - sysstat
+    - tcpdump
+    - tmux
+    - tree
+
+- name: ensure global tmux config is present
+  copy: src=tools/tmux.conf dest=/etc/tmux.conf owner=root group=root mode=644
