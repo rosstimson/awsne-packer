@@ -5,7 +5,7 @@
             "access_key":  "{{user `aws_access_key_id`}}",
             "secret_key":  "{{user `aws_secret_key`}}",
             "region": "eu-west-1",
-            "source_ami": "ami-a10897d6",
+            "source_ami": "ami-69b9941e",
             "ami_virtualization_type": "hvm",
             "instance_type": "c3.large",
             "ssh_username": "ec2-user",
