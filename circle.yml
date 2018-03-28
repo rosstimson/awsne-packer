@@ -1,9 +1,0 @@
-dependencies:
-  cache_directories:
-    - packer
-  pre:
-    - bash ./circleci-install-packer.sh
-
-test:
-  override:
-    - packer/packer build awsne-packer.json
