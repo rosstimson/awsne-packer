@@ -5,9 +5,11 @@
             "access_key":  "{{user `aws_access_key_id`}}",
             "secret_key":  "{{user `aws_secret_key`}}",
             "region": "eu-west-1",
-            "source_ami": "ami-69b9941e",
+            "source_ami": "ami-d834aba1",
             "ami_virtualization_type": "hvm",
-            "instance_type": "c3.large",
+            "instance_type": "t2.small",
+            "vpc_id": "vpc-b1f208d4",
+            "subnet_id": "subnet-57a10c32",
             "ssh_username": "ec2-user",
             "ssh_timeout": "3m",
             "ssh_pty": "true",
@@ -29,7 +31,8 @@
         {
             "execute_command": "echo 'ec2-user' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
             "type": "shell",
-            "inline": ["yum -y update", "reboot && sleep 60"]
+            "inline": ["yum -y update", "reboot && sleep 60"],
+            "expect_disconnect": true
         },
         {
             "execute_command": "echo 'ec2-user' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
